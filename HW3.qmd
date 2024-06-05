@@ -4,7 +4,28 @@ format: html
 editor: visual
 ---
 
-##Task 1
+##Task 1 
+
+1. If your working directory is myfolder/homework/, what relative path would you specify to get the file
+located at myfolder/MyData.csv?
+-
+  
+2. What are the major benefits of using R projects?
+-
+
+3. What is git and what is github?
+-
+
+4. What are the two main differences between a tibble and a data.frame?
+-
+
+5. Rewrite the following nested function call using baseR’s chaining operator:
+arrange(filter(select(as_tibble(iris), starts_with("Petal"), Species), Petal.Length <1.55), Species)
+-
+
+6. What is meant by long format data and wide format data? Which do we generally prefer for statistical
+analysis?
+-
 
 ##Task 2 : Reading Delimited Data
 ```{r}
@@ -78,69 +99,6 @@ final <- selected %>% group_by(quality) %>% mutate(mean_alcohol = mean(alcohol),
 
 ##Task 3: Database Practice
 ```{r}
-#1
-install.packages("DBI")
-install.packages("bigrquery")
-library(DBI)
-library(bigrquery)
-con <- dbConnect(
-  bigrquery::bigquery(),
-  project = "bigquery-public-data",
-  dataset = "google_trends",
-  billing = "st-558-425505"
-)
-dbListTables(con)
 
-#2
-library(dbplyr)
-teams_tbl <- tbl(con, "Teams")
-teams_2015 <- teams_tbl %>% filter(yearID == 2015) %>% collect()
-
-#3
-teams_2015_sql <- tbl(con, sql("SELECT * FROM Teams WHERE yearID = 2015")) %>% collect()
-
-#4
-query_4 <- "
-SELECT playerID, yearid, category
-FROM HallOfFame
-WHERE inducted = 'Y'
-"
-result4 <- dbGetQuery(con, query_4)
-
-#5
-query_5 <- "
-SELECT H.playerID, H.yearid, H.category, P.nameFirst, P.nameLast
-FROM HallOfFame H
-JOIN People P ON H.playerID = P.playerID
-WHERE H.inducted = 'Y'
-"
-result5 <- dbGetQuery(con, query_5)
-
-#6
-query_6 <- "
-SELECT M.playerID, SUM(M.G) AS G_managed, SUM(M.W) AS Total_W, SUM(M.L) AS Total_L,
-       CAST(SUM(M.W) AS REAL) / CAST(SUM(M.G) AS REAL) AS WL_percentage
-FROM Managers M
-GROUP BY M.playerID
-ORDER BY WL_percentage DESC
-"
-result6 <- dbGetQuery(con, query_6)
-
-#7
-query_7 <- "
-SELECT H.playerID, H.yearid, H.category, P.nameFirst, P.nameLast,
-       M.G_managed, M.Total_W, M.Total_L, M.WL_percentage
-FROM
-  (SELECT H.playerID, H.yearid, H.category
-   FROM HallOfFame H
-   WHERE H.inducted = 'Y') AS H
-LEFT JOIN People P ON H.playerID = P.playerID
-LEFT JOIN
-  (SELECT M.playerID, SUM(M.G) AS G_managed, SUM(M.W) AS Total_W, SUM(M.L) AS Total_L,
-          CAST(SUM(M.W) AS REAL) / CAST(SUM(M.G) AS REAL) AS WL_percentage
-   FROM Managers M
-   GROUP BY M.playerID) AS M ON H.playerID = M.playerID
-"
-result7 <- dbGetQuery(con, query_7)
 ```
 
